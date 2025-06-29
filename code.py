@@ -34,14 +34,29 @@ def open_txt(filename:str) -> str:
       A string containing the cleaned text contents of the file.
     """
     #Open the file.
+    filename = os.path.join(fname_data)
     with open(filename,'r', encoding = 'utf-8-sig', errors = 'ignore') as f:
         x = f.readlines()
-    #Tokenize the text contents.
     for i in range(len(x)):
         x[i] = nltk.tokenize.word_tokenize(x[i])
 
-    #Clean the text contents.
-    x = [word for line in x for word in line if not re.match(r'^\w+:\w+$', word)] #flatten and remove colons
+    x = list(map(str, x))
+
+    x = [re.sub(r'\w*:\w*', '', word).strip() for word in x if ':' in word] # remove lines not containing a colon so that only dialogue is captured.
+    x = [re.sub(r'\\\\n|\\\\t', '', word) for word in x] # remove line breaks and tab breaks
+    x = [re.sub(r'[^\w\s]|_', '', word) for word in x] # remove punctuation and underscore
+    x = [re.sub(r'\d{1, 3}', '', word) for word in x] # remove digits that are a minimum of 1 and a maximum of 3
+    x = [re.sub(r'\w*\d\w*', '', word) for word in x] # remove character strings that contain a digit
+    x = [re.sub(r'teacher', '', word) for word in x] # remove character strings that the word 'teacher'
+    x = [word.lower() for word in x]
+    x = [word.split() for word in x]
+    for i in range(len(x)):
+        filt = []
+        for j in range(len(x[i])):
+            if x[i][j] != 'teacher' and x[i][j] != 'female' and x[i][j] != 'male':
+                filt.append(x[i][j])
+        x[i] = filt
+    return ' '.join([' '.join(doc) for doc in x])
     x = [re.sub(r'\\\\n|\\\\t', '', word) for word in x] # remove line breaks and tab breaks
     x = [re.sub(r'[^\w\s]|_', '', word) for word in x] # remove punctuation and underscore
     x = [re.sub(r'\d{1, 3}', '', word) for word in x] # remove digits that are a minimum of 1 and a maximum of 3
