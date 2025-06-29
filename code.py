@@ -41,8 +41,7 @@ def open_txt(filename:str) -> str:
         x[i] = nltk.tokenize.word_tokenize(x[i])
 
     #Clean the text contents.
-    x = list(map(str, x))
-    x = [re.sub(r'\w*:\w*', '', word).strip() for word in x if ':' in word] #remove colons
+    x = [word for line in x for word in line if not re.match(r'^\w+:\w+$', word)] #flatten and remove colons
     x = [re.sub(r'\\\\n|\\\\t', '', word) for word in x] # remove line breaks and tab breaks
     x = [re.sub(r'[^\w\s]|_', '', word) for word in x] # remove punctuation and underscore
     x = [re.sub(r'\d{1, 3}', '', word) for word in x] # remove digits that are a minimum of 1 and a maximum of 3
