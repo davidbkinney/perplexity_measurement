@@ -59,7 +59,7 @@ def open_txt(filename:str) -> str:
     return ' '.join([' '.join(doc) for doc in x])
 
 
-def get_perplexity(text:str) -> float:
+def get_perplexity(text:str) -> tensor:
   """Obtains the perplexity of the text in a string."""
   encodings = tokenizer(text, return_tensors="pt")
   max_length = model.config.n_positions
